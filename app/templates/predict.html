@@ -1,0 +1,460 @@
+{% extends 'base.html' %}
+
+{% block title %}Analyze Transaction{% endblock %}
+
+{% block content %}
+<section class="pt-28 pb-16 gradient-bg min-h-[40vh] relative overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute top-10 left-10 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 right-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-white">
+            <h1 class="text-4xl lg:text-5xl font-bold mb-4" data-aos="fade-up">
+                Analyze Transaction
+            </h1>
+            <p class="text-xl text-blue-100 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                Enter transaction details below for real-time fraud detection analysis
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="py-12 -mt-20 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-8">
+            
+            <!-- Input Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-xl p-8" data-aos="fade-up">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-edit text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Transaction Details</h2>
+                            <p class="text-gray-500 text-sm">Enter the transaction features</p>
+                        </div>
+                    </div>
+                    
+                    <form id="prediction-form" class="space-y-6">
+                        <!-- Quick Input Options -->
+                        <div class="flex flex-wrap gap-3 mb-6">
+                            <button type="button" onclick="fillSampleLegit()" 
+                                    class="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium hover:bg-green-200 transition-colors">
+                                <i class="fas fa-check mr-2"></i>Sample Legitimate
+                            </button>
+                            <button type="button" onclick="fillSampleFraud()" 
+                                    class="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Sample Fraud
+                            </button>
+                            <button type="button" onclick="fillRandom()" 
+                                    class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-random mr-2"></i>Random Values
+                            </button>
+                            <button type="button" onclick="clearForm()" 
+                                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+                                <i class="fas fa-eraser mr-2"></i>Clear All
+                            </button>
+                        </div>
+                        
+                        <!-- Basic Transaction Info -->
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Time (seconds from first transaction)
+                                </label>
+                                <input type="number" name="Time" id="Time" step="any"
+                                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                                       placeholder="e.g., 3600">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Amount ($)
+                                </label>
+                                <input type="number" name="Amount" id="Amount" step="0.01"
+                                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                                       placeholder="e.g., 149.99">
+                            </div>
+                        </div>
+                        
+                        <!-- PCA Features -->
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">PCA Features (V1-V28)</h3>
+                                <button type="button" onclick="toggleAdvanced()" 
+                                        class="text-blue-600 text-sm font-medium hover:text-blue-700">
+                                    <i class="fas fa-chevron-down mr-1" id="toggle-icon"></i>
+                                    <span id="toggle-text">Show All</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Primary Features (Always Visible) -->
+                            <div class="grid md:grid-cols-4 gap-4 mb-4">
+                                {% for i in range(1, 9) %}
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">V{{ i }}</label>
+                                    <input type="number" name="V{{ i }}" id="V{{ i }}" step="any"
+                                           class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm"
+                                           placeholder="0.00">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Advanced Features (Hidden by Default) -->
+                            <div id="advanced-features" class="hidden">
+                                <div class="grid md:grid-cols-4 gap-4">
+                                    {% for i in range(9, 29) %}
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-600 mb-1">V{{ i }}</label>
+                                        <input type="number" name="V{{ i }}" id="V{{ i }}" step="any"
+                                               class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm"
+                                               placeholder="0.00">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="pt-4">
+                            <button type="submit" id="submit-btn"
+                                    class="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center space-x-3">
+                                <i class="fas fa-search-dollar text-xl"></i>
+                                <span>Analyze Transaction</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Results Panel -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-28">
+                    <!-- Initial State -->
+                    <div id="initial-state" class="bg-white rounded-2xl shadow-xl p-8 text-center" data-aos="fade-up" data-aos-delay="200">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-search text-gray-400 text-3xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Ready to Analyze</h3>
+                        <p class="text-gray-500">
+                            Enter transaction details and click "Analyze Transaction" to get fraud prediction results.
+                        </p>
+                    </div>
+                    
+                    <!-- Loading State -->
+                    <div id="loading-state" class="hidden bg-white rounded-2xl shadow-xl p-8 text-center">
+                        <div class="relative w-20 h-20 mx-auto mb-6">
+                            <div class="loader mx-auto"></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Analyzing...</h3>
+                        <p class="text-gray-500">Running predictions across all models</p>
+                    </div>
+                    
+                    <!-- Results State -->
+                    <div id="results-state" class="hidden space-y-6">
+                        <!-- Main Result Card -->
+                        <div id="main-result-card" class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                            <div id="result-header" class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div id="result-icon" class="w-16 h-16 rounded-xl flex items-center justify-center">
+                                        <!-- Icon will be inserted here -->
+                                    </div>
+                                    <div id="risk-badge" class="px-4 py-2 rounded-full font-semibold text-sm">
+                                        <!-- Risk level will be inserted here -->
+                                    </div>
+                                </div>
+                                <h3 id="result-title" class="text-2xl font-bold mb-2"></h3>
+                                <p id="result-subtitle" class="text-sm"></p>
+                            </div>
+                            
+                            <div class="p-6 border-t border-gray-100">
+                                <div class="mb-4">
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-gray-600">Fraud Probability</span>
+                                        <span id="probability-value" class="font-bold"></span>
+                                    </div>
+                                    <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                        <div id="probability-bar" class="h-full rounded-full transition-all duration-1000"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4 text-center">
+                                    <div class="bg-gray-50 rounded-xl p-4">
+                                        <div class="text-2xl font-bold text-gray-900" id="models-agree"></div>
+                                        <div class="text-xs text-gray-500">Models Agree</div>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-xl p-4">
+                                        <div class="text-2xl font-bold text-gray-900" id="confidence-score"></div>
+                                        <div class="text-xs text-gray-500">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Model Breakdown -->
+                        <div class="bg-white rounded-2xl shadow-xl p-6">
+                            <h4 class="font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-layer-group text-blue-500 mr-2"></i>
+                                Model Predictions
+                            </h4>
+                            <div id="model-predictions" class="space-y-3">
+                                <!-- Model predictions will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Feature Importance -->
+                        <div class="bg-white rounded-2xl shadow-xl p-6">
+                            <h4 class="font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-chart-bar text-cyan-500 mr-2"></i>
+                                Top Contributing Features
+                            </h4>
+                            <div id="feature-importance" class="space-y-3">
+                                <!-- Feature importance will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Toggle advanced features
+    function toggleAdvanced() {
+        const advancedSection = document.getElementById('advanced-features');
+        const toggleIcon = document.getElementById('toggle-icon');
+        const toggleText = document.getElementById('toggle-text');
+        
+        advancedSection.classList.toggle('hidden');
+        
+        if (advancedSection.classList.contains('hidden')) {
+            toggleIcon.classList.remove('fa-chevron-up');
+            toggleIcon.classList.add('fa-chevron-down');
+            toggleText.textContent = 'Show All';
+        } else {
+            toggleIcon.classList.remove('fa-chevron-down');
+            toggleIcon.classList.add('fa-chevron-up');
+            toggleText.textContent = 'Show Less';
+        }
+    }
+    
+    // Sample legitimate transaction
+    function fillSampleLegit() {
+        document.getElementById('Time').value = 3600;
+        document.getElementById('Amount').value = 45.00;
+        document.getElementById('V1').value = -0.12;
+        document.getElementById('V2').value = 0.05;
+        document.getElementById('V3').value = 0.89;
+        document.getElementById('V4').value = 0.15;
+        document.getElementById('V5').value = -0.23;
+        document.getElementById('V6').value = 0.11;
+        document.getElementById('V7').value = -0.02;
+        document.getElementById('V8').value = 0.08;
+        for (let i = 9; i <= 28; i++) {
+            document.getElementById('V' + i).value = (Math.random() * 0.4 - 0.2).toFixed(4);
+        }
+    }
+    
+    // Sample fraudulent transaction
+    function fillSampleFraud() {
+        document.getElementById('Time').value = 50000;
+        document.getElementById('Amount').value = 1250.00;
+        document.getElementById('V1').value = -2.5;
+        document.getElementById('V2').value = 3.2;
+        document.getElementById('V3').value = -1.8;
+        document.getElementById('V4').value = 4.1;
+        document.getElementById('V5').value = -2.1;
+        document.getElementById('V6').value = -1.5;
+        document.getElementById('V7').value = 3.5;
+        document.getElementById('V8').value = -2.8;
+        for (let i = 9; i <= 28; i++) {
+            document.getElementById('V' + i).value = (Math.random() * 4 - 2).toFixed(4);
+        }
+    }
+    
+    // Random values
+    function fillRandom() {
+        document.getElementById('Time').value = Math.floor(Math.random() * 172800);
+        document.getElementById('Amount').value = (Math.random() * 500).toFixed(2);
+        for (let i = 1; i <= 28; i++) {
+            document.getElementById('V' + i).value = (Math.random() * 4 - 2).toFixed(4);
+        }
+    }
+    
+    // Clear form
+    function clearForm() {
+        document.getElementById('prediction-form').reset();
+        showInitialState();
+    }
+    
+    // Show states
+    function showInitialState() {
+        document.getElementById('initial-state').classList.remove('hidden');
+        document.getElementById('loading-state').classList.add('hidden');
+        document.getElementById('results-state').classList.add('hidden');
+    }
+    
+    function showLoadingState() {
+        document.getElementById('initial-state').classList.add('hidden');
+        document.getElementById('loading-state').classList.remove('hidden');
+        document.getElementById('results-state').classList.add('hidden');
+    }
+    
+    function showResultsState() {
+        document.getElementById('initial-state').classList.add('hidden');
+        document.getElementById('loading-state').classList.add('hidden');
+        document.getElementById('results-state').classList.remove('hidden');
+    }
+    
+    // Form submission
+    document.getElementById('prediction-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        showLoadingState();
+        
+        // Collect form data
+        const formData = {};
+        const formElements = this.elements;
+        
+        for (let i = 0; i < formElements.length; i++) {
+            const element = formElements[i];
+            if (element.name && element.value) {
+                formData[element.name] = parseFloat(element.value) || 0;
+            }
+        }
+        
+        try {
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                displayResults(result);
+            } else {
+                showToast('error', 'Error: ' + result.error);
+                showInitialState();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('error', 'An error occurred. Please try again.');
+            showInitialState();
+        }
+    });
+    
+    // Display results
+    function displayResults(result) {
+        const isFraud = result.prediction === 1;
+        const probability = result.probability;
+        
+        // Update header styling
+        const resultHeader = document.getElementById('result-header');
+        const resultIcon = document.getElementById('result-icon');
+        const resultTitle = document.getElementById('result-title');
+        const resultSubtitle = document.getElementById('result-subtitle');
+        const riskBadge = document.getElementById('risk-badge');
+        const probabilityBar = document.getElementById('probability-bar');
+        
+        if (isFraud) {
+            resultHeader.className = 'p-6 bg-gradient-to-r from-red-500 to-orange-500 text-white';
+            resultIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-3xl text-white"></i>';
+            resultIcon.className = 'w-16 h-16 rounded-xl flex items-center justify-center bg-white/20';
+            resultTitle.textContent = 'Fraudulent Transaction';
+            resultSubtitle.textContent = 'High-risk transaction detected';
+            probabilityBar.className = 'h-full rounded-full transition-all duration-1000 bg-red-500';
+        } else {
+            resultHeader.className = 'p-6 bg-gradient-to-r from-green-500 to-emerald-500 text-white';
+            resultIcon.innerHTML = '<i class="fas fa-check-circle text-3xl text-white"></i>';
+            resultIcon.className = 'w-16 h-16 rounded-xl flex items-center justify-center bg-white/20';
+            resultTitle.textContent = 'Legitimate Transaction';
+            resultSubtitle.textContent = 'Transaction appears safe';
+            probabilityBar.className = 'h-full rounded-full transition-all duration-1000 bg-green-500';
+        }
+        
+        // Risk badge
+        const riskColors = {
+            'Critical': 'bg-red-100 text-red-700',
+            'High': 'bg-orange-100 text-orange-700',
+            'Medium': 'bg-yellow-100 text-yellow-700',
+            'Low': 'bg-green-100 text-green-700',
+            'Very Low': 'bg-emerald-100 text-emerald-700'
+        };
+        riskBadge.className = `px-4 py-2 rounded-full font-semibold text-sm ${riskColors[result.risk_level] || 'bg-gray-100 text-gray-700'}`;
+        riskBadge.textContent = result.risk_level + ' Risk';
+        
+        // Probability
+        document.getElementById('probability-value').textContent = (probability * 100).toFixed(2) + '%';
+        setTimeout(() => {
+            probabilityBar.style.width = (probability * 100) + '%';
+        }, 100);
+        
+        // Model agreement
+        const modelPreds = Object.values(result.model_predictions);
+        const fraudCount = modelPreds.filter(m => m.prediction === 1).length;
+        document.getElementById('models-agree').textContent = `${isFraud ? fraudCount : modelPreds.length - fraudCount}/${modelPreds.length}`;
+        
+        // Confidence
+        const avgProb = modelPreds.reduce((sum, m) => sum + m.probability, 0) / modelPreds.length;
+        const confidence = isFraud ? avgProb : (1 - avgProb);
+        document.getElementById('confidence-score').textContent = (confidence * 100).toFixed(1) + '%';
+        
+        // Model predictions
+        const modelPredsContainer = document.getElementById('model-predictions');
+        modelPredsContainer.innerHTML = '';
+        
+        Object.entries(result.model_predictions).forEach(([name, pred]) => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center justify-between p-3 rounded-lg bg-gray-50';
+            div.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg ${pred.prediction === 1 ? 'bg-red-100' : 'bg-green-100'} flex items-center justify-center">
+                        <i class="fas ${pred.prediction === 1 ? 'fa-times text-red-500' : 'fa-check text-green-500'} text-sm"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 text-sm capitalize">${name.replace(/_/g, ' ')}</span>
+                </div>
+                <span class="text-sm font-bold ${pred.prediction === 1 ? 'text-red-600' : 'text-green-600'}">
+                    ${(pred.probability * 100).toFixed(1)}%
+                </span>
+            `;
+            modelPredsContainer.appendChild(div);
+        });
+        
+        // Feature importance
+        const featureContainer = document.getElementById('feature-importance');
+        featureContainer.innerHTML = '';
+        
+        const topFeatures = Object.entries(result.feature_importance)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+        
+        const maxImportance = topFeatures[0] ? topFeatures[0][1] : 1;
+        
+        topFeatures.forEach(([feature, importance]) => {
+            const percentage = (importance / maxImportance) * 100;
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <div class="flex justify-between text-sm mb-1">
+                    <span class="text-gray-600 font-medium">${feature}</span>
+                    <span class="text-gray-900 font-bold">${(importance * 100).toFixed(2)}%</span>
+                </div>
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" 
+                         style="width: ${percentage}%"></div>
+                </div>
+            `;
+            featureContainer.appendChild(div);
+        });
+        
+        showResultsState();
+        showToast('success', 'Analysis complete!');
+    }
+</script>
+{% endblock %}

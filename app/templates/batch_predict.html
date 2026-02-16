@@ -1,0 +1,611 @@
+{% extends 'base.html' %}
+
+{% block title %}Batch Analysis{% endblock %}
+
+{% block content %}
+<!-- Header - Compact -->
+<section class="pt-24 pb-8 gradient-bg relative overflow-hidden">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-white">
+            <h1 class="text-3xl lg:text-4xl font-bold mb-2">Batch Transaction Analysis</h1>
+            <p class="text-blue-100">Upload CSV files for bulk fraud detection</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-6 -mt-8 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-4 gap-4">
+            
+            <!-- Upload Section - Compact Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-lg p-4 sticky top-24">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-cloud-upload-alt text-blue-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-gray-900">Upload File</h2>
+                            <p class="text-gray-500 text-xs">CSV or Excel</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Area - Compact -->
+                    <form id="batch-upload-form" enctype="multipart/form-data">
+                        <div id="drop-zone" 
+                             class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-blue-500 hover:bg-blue-50/50 transition-all cursor-pointer"
+                             ondrop="handleDrop(event)" 
+                             ondragover="handleDragOver(event)"
+                             ondragleave="handleDragLeave(event)">
+                            <input type="file" id="file-input" name="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleFileSelect(event)">
+                            
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <i class="fas fa-file-csv text-blue-600"></i>
+                            </div>
+                            <p class="text-gray-700 text-xs font-medium">Drop file or <button type="button" onclick="document.getElementById('file-input').click()" class="text-blue-600 font-semibold">browse</button></p>
+                            <p class="text-[10px] text-gray-500 mt-1">Max 16MB</p>
+                        </div>
+                        
+                        <!-- Selected File Info -->
+                        <div id="file-info" class="hidden mt-3 p-2 bg-gray-50 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-file-alt text-green-600 text-sm"></i>
+                                    <div>
+                                        <p id="file-name" class="font-medium text-gray-900 text-xs truncate max-w-[120px]"></p>
+                                        <p id="file-size" class="text-[10px] text-gray-500"></p>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="removeFile()" class="text-red-500 hover:text-red-700">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Button -->
+                        <button type="submit" id="upload-btn" disabled
+                                class="w-full mt-3 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg text-sm hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+                            <i class="fas fa-rocket text-xs"></i>
+                            <span>Analyze</span>
+                        </button>
+                    </form>
+                    
+                    <!-- Quick Info -->
+                    <div class="mt-3 p-2 bg-amber-50 rounded-lg border border-amber-100">
+                        <p class="text-[10px] text-amber-700">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Include: Time, V1-V28, Amount columns
+                        </p>
+                    </div>
+                    
+                    <!-- Download Sample -->
+                    <button onclick="downloadSample()" 
+                            class="w-full mt-2 py-2 border border-gray-200 text-gray-700 font-medium rounded-lg text-xs hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center space-x-1">
+                        <i class="fas fa-download text-xs"></i>
+                        <span>Sample CSV</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="lg:col-span-3">
+                <!-- Initial State -->
+                <div id="batch-initial-state" class="bg-white rounded-xl shadow-lg p-8 text-center">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-table text-gray-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">No File Uploaded</h3>
+                    <p class="text-gray-500 text-sm">Upload a CSV file to perform batch fraud analysis</p>
+                </div>
+                
+                <!-- Loading State -->
+                <div id="batch-loading-state" class="hidden bg-white rounded-xl shadow-lg p-8 text-center">
+                    <div class="loader w-12 h-12 mx-auto mb-4"></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Processing...</h3>
+                    <p class="text-gray-500 text-sm" id="processing-status">Analyzing transactions</p>
+                    <div class="mt-4 max-w-xs mx-auto">
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1" id="progress-text">0%</p>
+                    </div>
+                </div>
+                
+                <!-- Results State -->
+                <div id="batch-results-state" class="hidden space-y-4">
+                    <!-- Summary Cards - Compact Row -->
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="bg-white rounded-xl shadow-lg p-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-list-ol text-blue-600 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-[10px]">Total</p>
+                                    <h3 class="text-lg font-bold text-gray-900" id="total-count">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-exclamation-triangle text-red-600 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-[10px]">Fraud</p>
+                                    <h3 class="text-lg font-bold text-red-600" id="fraud-count">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-check-circle text-green-600 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-[10px]">Legit</p>
+                                    <h3 class="text-lg font-bold text-green-600" id="legit-count">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-percentage text-amber-600 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-[10px]">Fraud %</p>
+                                    <h3 class="text-lg font-bold text-amber-600" id="fraud-rate">0%</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts Row - Compact -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white rounded-xl shadow-lg p-3">
+                            <h4 class="font-bold text-gray-900 text-xs mb-2 flex items-center">
+                                <i class="fas fa-chart-pie text-blue-500 mr-1"></i>
+                                Distribution
+                            </h4>
+                            <div style="height: 120px;">
+                                <canvas id="riskDistributionChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-3">
+                            <h4 class="font-bold text-gray-900 text-xs mb-2 flex items-center">
+                                <i class="fas fa-chart-bar text-cyan-500 mr-1"></i>
+                                Probability
+                            </h4>
+                            <div style="height: 120px;">
+                                <canvas id="probabilityDistributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Table - Compact -->
+                    <div class="bg-white rounded-xl shadow-lg p-3">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-bold text-gray-900 text-xs flex items-center">
+                                <i class="fas fa-table text-blue-500 mr-1"></i>
+                                Results
+                            </h4>
+                            <div class="flex items-center space-x-2">
+                                <select id="filter-risk" onchange="filterResults()" class="px-2 py-1 border border-gray-200 rounded text-xs">
+                                    <option value="all">All</option>
+                                    <option value="Critical">Critical</option>
+                                    <option value="High">High</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                                <button onclick="exportResults()" class="px-2 py-1 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700">
+                                    <i class="fas fa-download mr-1"></i>Export
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto max-h-64 overflow-y-auto">
+                            <table class="w-full text-xs">
+                                <thead class="sticky top-0 bg-gray-50">
+                                    <tr class="border-b border-gray-200">
+                                        <th class="text-left py-2 px-2 font-semibold text-gray-600">#</th>
+                                        <th class="text-left py-2 px-2 font-semibold text-gray-600">Amount</th>
+                                        <th class="text-center py-2 px-2 font-semibold text-gray-600">Prediction</th>
+                                        <th class="text-center py-2 px-2 font-semibold text-gray-600">Prob</th>
+                                        <th class="text-center py-2 px-2 font-semibold text-gray-600">Risk</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-table-body">
+                                    <!-- Results will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination - Compact -->
+                        <div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
+                            <p class="text-[10px] text-gray-500">
+                                <span id="showing-count">0</span> of <span id="total-results">0</span>
+                            </p>
+                            <div class="flex items-center space-x-1">
+                                <button onclick="prevPage()" class="px-2 py-1 border border-gray-200 rounded text-xs hover:bg-gray-50 disabled:opacity-50" id="prev-btn" disabled>
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <span class="px-2 py-1 text-xs" id="page-info">1</span>
+                                <button onclick="nextPage()" class="px-2 py-1 border border-gray-200 rounded text-xs hover:bg-gray-50 disabled:opacity-50" id="next-btn">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Risk Breakdown - Compact -->
+                    <div class="bg-white rounded-xl shadow-lg p-3">
+                        <h4 class="font-bold text-gray-900 text-xs mb-2">Risk Level Breakdown</h4>
+                        <div class="grid grid-cols-5 gap-2" id="risk-breakdown">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Loader CSS -->
+<style>
+    .loader {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    let selectedFile = null;
+    let batchResults = [];
+    let currentPage = 1;
+    const resultsPerPage = 15;
+    
+    // File handling functions
+    function handleDragOver(e) {
+        e.preventDefault();
+        document.getElementById('drop-zone').classList.add('border-blue-500', 'bg-blue-50');
+    }
+    
+    function handleDragLeave(e) {
+        e.preventDefault();
+        document.getElementById('drop-zone').classList.remove('border-blue-500', 'bg-blue-50');
+    }
+    
+    function handleDrop(e) {
+        e.preventDefault();
+        handleDragLeave(e);
+        if (e.dataTransfer.files.length > 0) {
+            processFile(e.dataTransfer.files[0]);
+        }
+    }
+    
+    function handleFileSelect(e) {
+        if (e.target.files.length > 0) {
+            processFile(e.target.files[0]);
+        }
+    }
+    
+    function processFile(file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (!['csv', 'xlsx', 'xls'].includes(ext)) {
+            showToast('error', 'Please upload CSV or Excel file');
+            return;
+        }
+        if (file.size > 16 * 1024 * 1024) {
+            showToast('error', 'File too large (max 16MB)');
+            return;
+        }
+        
+        selectedFile = file;
+        document.getElementById('file-name').textContent = file.name;
+        document.getElementById('file-size').textContent = formatFileSize(file.size);
+        document.getElementById('file-info').classList.remove('hidden');
+        document.getElementById('upload-btn').disabled = false;
+    }
+    
+    function removeFile() {
+        selectedFile = null;
+        document.getElementById('file-input').value = '';
+        document.getElementById('file-info').classList.add('hidden');
+        document.getElementById('upload-btn').disabled = true;
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+    
+    // State management
+    function showInitialState() {
+        document.getElementById('batch-initial-state').classList.remove('hidden');
+        document.getElementById('batch-loading-state').classList.add('hidden');
+        document.getElementById('batch-results-state').classList.add('hidden');
+    }
+    
+    function showLoadingState() {
+        document.getElementById('batch-initial-state').classList.add('hidden');
+        document.getElementById('batch-loading-state').classList.remove('hidden');
+        document.getElementById('batch-results-state').classList.add('hidden');
+    }
+    
+    function showResultsState() {
+        document.getElementById('batch-initial-state').classList.add('hidden');
+        document.getElementById('batch-loading-state').classList.add('hidden');
+        document.getElementById('batch-results-state').classList.remove('hidden');
+    }
+    
+    function simulateProgress() {
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 20;
+            if (progress > 90) progress = 90;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('progress-text').textContent = Math.floor(progress) + '%';
+        }, 150);
+        
+        setTimeout(() => {
+            clearInterval(interval);
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-text').textContent = '100%';
+        }, 2000);
+    }
+    
+    // Form submission
+    document.getElementById('batch-upload-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!selectedFile) return;
+        
+        showLoadingState();
+        simulateProgress();
+        
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        
+        try {
+            const response = await fetch('/api/batch-predict', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                batchResults = result.results;
+                displayBatchResults(result);
+            } else {
+                showToast('error', result.error || 'An error occurred');
+                showInitialState();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('error', 'An error occurred. Please try again.');
+            showInitialState();
+        }
+    });
+    
+    // Display results
+    function displayBatchResults(result) {
+        // Update summary cards
+        document.getElementById('total-count').textContent = result.summary.total_transactions.toLocaleString();
+        document.getElementById('fraud-count').textContent = result.summary.fraudulent.toLocaleString();
+        document.getElementById('legit-count').textContent = result.summary.legitimate.toLocaleString();
+        document.getElementById('fraud-rate').textContent = result.summary.fraud_percentage.toFixed(1) + '%';
+        
+        // Draw charts
+        drawCharts(result.summary);
+        
+        // Draw risk breakdown
+        drawRiskBreakdown(result.summary);
+        
+        // Update table
+        currentPage = 1;
+        updateResultsTable();
+        
+        showResultsState();
+        showToast('success', 'Analyzed ' + result.summary.total_transactions + ' transactions');
+    }
+    
+    function drawCharts(summary) {
+        // Destroy existing charts if they exist
+        const chart1 = Chart.getChart('riskDistributionChart');
+        const chart2 = Chart.getChart('probabilityDistributionChart');
+        if (chart1) chart1.destroy();
+        if (chart2) chart2.destroy();
+        
+        // Distribution Chart
+        new Chart(document.getElementById('riskDistributionChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Legit', 'Fraud'],
+                datasets: [{
+                    data: [summary.legitimate, summary.fraudulent],
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'right', 
+                        labels: { boxWidth: 10, font: { size: 9 } } 
+                    }
+                }
+            }
+        });
+        
+        // Probability Distribution Chart
+        const probs = batchResults.map(r => r.probability);
+        const bins = [0, 0, 0, 0, 0];
+        probs.forEach(p => {
+            if (p < 0.2) bins[0]++;
+            else if (p < 0.4) bins[1]++;
+            else if (p < 0.6) bins[2]++;
+            else if (p < 0.8) bins[3]++;
+            else bins[4]++;
+        });
+        
+        new Chart(document.getElementById('probabilityDistributionChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['0-20%', '20-40%', '40-60%', '60-80%', '80-100%'],
+                datasets: [{
+                    data: bins,
+                    backgroundColor: ['#10b981', '#22c55e', '#f59e0b', '#f97316', '#ef4444'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    function drawRiskBreakdown(summary) {
+        const container = document.getElementById('risk-breakdown');
+        container.innerHTML = '';
+        
+        const risks = [
+            { name: 'Critical', count: summary.high_risk_count || Math.floor(summary.fraudulent * 0.4), bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-600' },
+            { name: 'High', count: Math.floor(summary.fraudulent * 0.3) || 0, bg: 'bg-orange-50', border: 'border-orange-100', text: 'text-orange-600' },
+            { name: 'Medium', count: summary.medium_risk_count || Math.floor(summary.fraudulent * 0.2), bg: 'bg-yellow-50', border: 'border-yellow-100', text: 'text-yellow-600' },
+            { name: 'Low', count: summary.low_risk_count || Math.floor(summary.legitimate * 0.3), bg: 'bg-green-50', border: 'border-green-100', text: 'text-green-600' },
+            { name: 'V.Low', count: summary.legitimate - Math.floor(summary.legitimate * 0.3) || 0, bg: 'bg-emerald-50', border: 'border-emerald-100', text: 'text-emerald-600' }
+        ];
+        
+        risks.forEach(r => {
+            const div = document.createElement('div');
+            div.className = 'text-center p-2 rounded-lg border ' + r.bg + ' ' + r.border;
+            div.innerHTML = '<div class="text-lg font-bold ' + r.text + '">' + r.count + '</div><div class="text-[10px] text-gray-600">' + r.name + '</div>';
+            container.appendChild(div);
+        });
+    }
+    
+    function updateResultsTable() {
+        const tbody = document.getElementById('results-table-body');
+        const start = (currentPage - 1) * resultsPerPage;
+        const end = Math.min(start + resultsPerPage, batchResults.length);
+        const pageResults = batchResults.slice(start, end);
+        
+        tbody.innerHTML = '';
+        
+        pageResults.forEach((r, i) => {
+            const riskColors = {
+                'Critical': 'bg-red-100 text-red-700',
+                'High': 'bg-orange-100 text-orange-700',
+                'Medium': 'bg-yellow-100 text-yellow-700',
+                'Low': 'bg-green-100 text-green-700',
+                'Very Low': 'bg-emerald-100 text-emerald-700'
+            };
+            
+            const row = document.createElement('tr');
+            row.className = 'border-b border-gray-100 hover:bg-gray-50';
+            row.innerHTML = 
+                '<td class="py-1.5 px-2">' + (start + i + 1) + '</td>' +
+                '<td class="py-1.5 px-2 font-medium">$' + (r.amount || 0).toFixed(2) + '</td>' +
+                '<td class="py-1.5 px-2 text-center">' +
+                    '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ' + (r.prediction === 1 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700') + '">' +
+                        (r.prediction === 1 ? 'Fraud' : 'Legit') +
+                    '</span>' +
+                '</td>' +
+                '<td class="py-1.5 px-2 text-center font-medium">' + (r.probability * 100).toFixed(1) + '%</td>' +
+                '<td class="py-1.5 px-2 text-center">' +
+                    '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ' + (riskColors[r.risk_level] || 'bg-gray-100 text-gray-700') + '">' +
+                        r.risk_level +
+                    '</span>' +
+                '</td>';
+            tbody.appendChild(row);
+        });
+        
+        // Update pagination info
+        document.getElementById('showing-count').textContent = end;
+        document.getElementById('total-results').textContent = batchResults.length;
+        document.getElementById('page-info').textContent = currentPage + '/' + Math.ceil(batchResults.length / resultsPerPage);
+        document.getElementById('prev-btn').disabled = currentPage === 1;
+        document.getElementById('next-btn').disabled = end >= batchResults.length;
+    }
+    
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            updateResultsTable();
+        }
+    }
+    
+    function nextPage() {
+        if (currentPage * resultsPerPage < batchResults.length) {
+            currentPage++;
+            updateResultsTable();
+        }
+    }
+    
+    function filterResults() {
+        const filter = document.getElementById('filter-risk').value;
+        currentPage = 1;
+        updateResultsTable();
+    }
+    
+    function exportResults() {
+        let csv = 'Index,Amount,Prediction,Probability,Risk Level\n';
+        batchResults.forEach((r, i) => {
+            csv += (i + 1) + ',' + (r.amount || 0) + ',' + r.prediction_label + ',' + (r.probability * 100).toFixed(2) + '%,' + r.risk_level + '\n';
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'fraud_detection_results.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+    
+    function downloadSample() {
+        const sample = 'Time,V1,V2,V3,V4,V5,V6,V7,V8,V9,V10,V11,V12,V13,V14,V15,V16,V17,V18,V19,V20,V21,V22,V23,V24,V25,V26,V27,V28,Amount\n' +
+            '0,-1.36,-0.07,2.54,1.38,-0.34,0.46,0.24,0.10,0.36,0.09,-0.55,-0.62,-0.99,-0.31,1.47,-0.47,0.21,0.03,0.40,0.25,-0.02,0.28,-0.11,0.07,0.13,-0.19,0.13,-0.02,149.62\n' +
+            '1,1.19,0.27,0.17,0.45,0.06,-0.08,-0.08,0.09,-0.26,-0.17,1.61,1.07,0.49,-0.14,0.64,0.46,-0.11,-0.18,-0.15,-0.07,-0.23,-0.38,0.10,0.01,0.01,0.01,0.00,-0.00,2.69\n' +
+            '2,-1.16,0.88,1.55,0.40,-0.50,0.65,-0.04,-0.20,0.13,-0.29,0.60,0.50,-0.07,-0.19,-2.32,-0.03,-0.42,-0.58,-0.02,0.08,0.01,-0.15,0.07,0.05,-0.07,0.03,-0.09,-0.01,378.66\n' +
+            '3,-0.97,0.78,1.78,0.41,-0.58,0.54,-0.31,-0.18,0.35,-0.28,0.47,0.23,-0.29,0.21,0.53,-0.26,0.04,-0.17,-0.18,-0.06,-0.18,-0.42,-0.05,-0.05,-0.05,0.02,0.07,0.02,123.50\n' +
+            '4,-2.50,3.20,-1.80,4.10,-2.10,-1.50,3.50,-2.80,1.20,-0.90,-0.45,0.78,-0.85,0.42,-3.20,0.52,-2.10,-0.32,0.85,0.42,0.28,-0.54,0.14,-0.22,0.38,-0.12,0.24,-0.08,1250.00';
+        
+        const blob = new Blob([sample], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'sample_transactions.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+    
+    // Toast notification function (if not already defined globally)
+    function showToast(type, message) {
+        if (typeof window.showToast === 'function') {
+            window.showToast(type, message);
+        } else {
+            alert(message);
+        }
+    }
+</script>
+{% endblock %}

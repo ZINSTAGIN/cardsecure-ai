@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Header Section - Reduced -->
+<section class="pt-24 pb-8 gradient-bg relative overflow-hidden">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-white">
+            <h1 class="text-3xl lg:text-4xl font-bold mb-2">Analytics Dashboard</h1>
+            <p class="text-blue-100">Monitor model performance and fraud detection metrics</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-6 -mt-8 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Stats Cards - Compact -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-xs font-medium">Best Accuracy</p>
+                        <h3 class="text-2xl font-bold text-gray-900">99.8%</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bullseye text-blue-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-xs font-medium">Avg F1-Score</p>
+                        <h3 class="text-2xl font-bold text-gray-900">0.95</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-pie text-cyan-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-xs font-medium">ROC-AUC</p>
+                        <h3 class="text-2xl font-bold text-gray-900">0.98</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-area text-emerald-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-xs font-medium">Active Models</p>
+                        <h3 class="text-2xl font-bold text-gray-900">10+</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-brain text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Row - Compact -->
+        <div class="grid lg:grid-cols-2 gap-4 mb-6">
+            <!-- Model Performance Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <h3 class="text-sm font-bold text-gray-900 mb-3">Model Performance</h3>
+                <div style="height: 200px;">
+                    <canvas id="modelPerformanceChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Feature Importance Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <h3 class="text-sm font-bold text-gray-900 mb-3">Feature Importance</h3>
+                <div style="height: 200px;">
+                    <canvas id="featureImportanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Second Row - Distribution & Summary -->
+        <div class="grid lg:grid-cols-3 gap-4 mb-6">
+            <!-- Prediction Distribution -->
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <h3 class="text-sm font-bold text-gray-900 mb-3">Prediction Distribution</h3>
+                <div style="height: 150px;">
+                    <canvas id="predictionDistChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="bg-white rounded-xl shadow-lg p-4 lg:col-span-2">
+                <h3 class="text-sm font-bold text-gray-900 mb-3">Training Summary</h3>
+                <div class="grid grid-cols-4 gap-3">
+                    <div class="text-center p-3 bg-gray-50 rounded-lg">
+                        <i class="fas fa-database text-blue-500 mb-1"></i>
+                        <div class="text-lg font-bold text-gray-900">8,000</div>
+                        <div class="text-xs text-gray-500">Training</div>
+                    </div>
+                    <div class="text-center p-3 bg-gray-50 rounded-lg">
+                        <i class="fas fa-vial text-green-500 mb-1"></i>
+                        <div class="text-lg font-bold text-gray-900">2,000</div>
+                        <div class="text-xs text-gray-500">Test</div>
+                    </div>
+                    <div class="text-center p-3 bg-gray-50 rounded-lg">
+                        <i class="fas fa-cogs text-purple-500 mb-1"></i>
+                        <div class="text-lg font-bold text-gray-900">30</div>
+                        <div class="text-xs text-gray-500">Features</div>
+                    </div>
+                    <div class="text-center p-3 bg-gray-50 rounded-lg">
+                        <i class="fas fa-clock text-orange-500 mb-1"></i>
+                        <div class="text-lg font-bold text-gray-900">~2m</div>
+                        <div class="text-xs text-gray-500">Train Time</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Model Metrics Table - Compact -->
+        <div class="bg-white rounded-xl shadow-lg p-4">
+            <h3 class="text-sm font-bold text-gray-900 mb-3">Model Metrics</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200 bg-gray-50">
+                            <th class="text-left py-2 px-3 font-semibold text-gray-600">Model</th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-600">Accuracy</th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-600">Precision</th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-600">Recall</th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-600">F1</th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-600">AUC</th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-600">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metrics-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Model Performance Chart - Compact
+    new Chart(document.getElementById('modelPerformanceChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['RF', 'XGB', 'LGB', 'NN', 'Stack'],
+            datasets: [{
+                label: 'Accuracy',
+                data: [0.998, 0.997, 0.996, 0.994, 0.999],
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderRadius: 4
+            }, {
+                label: 'F1-Score',
+                data: [0.94, 0.95, 0.93, 0.92, 0.96],
+                backgroundColor: 'rgba(6, 182, 212, 0.8)',
+                borderRadius: 4
+            }, {
+                label: 'ROC-AUC',
+                data: [0.97, 0.98, 0.97, 0.95, 0.99],
+                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } }
+            },
+            scales: {
+                y: { beginAtZero: false, min: 0.9, max: 1 }
+            }
+        }
+    });
+    
+    // Feature Importance Chart - Compact
+    new Chart(document.getElementById('featureImportanceChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['V14', 'V17', 'V12', 'V10', 'V4', 'V11', 'Amount'],
+            datasets: [{
+                label: 'Importance',
+                data: [0.15, 0.12, 0.10, 0.09, 0.08, 0.07, 0.05],
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+    
+    // Prediction Distribution - Compact
+    new Chart(document.getElementById('predictionDistChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Legitimate', 'Fraud'],
+            datasets: [{
+                data: [9830, 170],
+                backgroundColor: ['#10b981', '#ef4444'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } }
+            }
+        }
+    });
+    
+    // Populate Table
+    const metricsData = [
+        { model: 'Stacking Ensemble', accuracy: 0.999, precision: 0.95, recall: 0.92, f1: 0.96, roc: 0.99, best: true },
+        { model: 'XGBoost', accuracy: 0.997, precision: 0.94, recall: 0.91, f1: 0.95, roc: 0.98 },
+        { model: 'Random Forest', accuracy: 0.998, precision: 0.93, recall: 0.90, f1: 0.94, roc: 0.97 },
+        { model: 'LightGBM', accuracy: 0.996, precision: 0.92, recall: 0.89, f1: 0.93, roc: 0.97 },
+        { model: 'Neural Network', accuracy: 0.994, precision: 0.91, recall: 0.88, f1: 0.92, roc: 0.95 }
+    ];
+    
+    const tableBody = document.getElementById('metrics-table-body');
+    metricsData.forEach(m => {
+        const row = document.createElement('tr');
+        row.className = `border-b border-gray-100 hover:bg-gray-50 ${m.best ? 'bg-green-50' : ''}`;
+        row.innerHTML = `
+            <td class="py-2 px-3 font-medium text-gray-900">${m.best ? '👑 ' : ''}${m.model}</td>
+            <td class="py-2 px-3 text-center">${(m.accuracy * 100).toFixed(1)}%</td>
+            <td class="py-2 px-3 text-center">${(m.precision * 100).toFixed(1)}%</td>
+            <td class="py-2 px-3 text-center">${(m.recall * 100).toFixed(1)}%</td>
+            <td class="py-2 px-3 text-center font-bold text-blue-600">${m.f1.toFixed(2)}</td>
+            <td class="py-2 px-3 text-center font-bold text-cyan-600">${m.roc.toFixed(2)}</td>
+            <td class="py-2 px-3 text-center">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1"></span>Active
+                </span>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+</script>
+{% endblock %}

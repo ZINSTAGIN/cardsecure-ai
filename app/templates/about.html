@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<section class="pt-24 pb-12 gradient-bg relative overflow-hidden">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-white">
+            <h1 class="text-3xl lg:text-4xl font-bold mb-2">About CardSecure AI</h1>
+            <p class="text-blue-100">Advanced machine learning for real-time fraud detection</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-8 items-center mb-12">
+            <div>
+                <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-xs font-semibold mb-3">
+                    <i class="fas fa-info-circle mr-1"></i>Our Mission
+                </span>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+                    Protecting Financial Transactions with AI
+                </h2>
+                <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                    CardSecure AI leverages cutting-edge ensemble machine learning techniques to detect and prevent credit card fraud in real-time. Our system combines multiple advanced algorithms to achieve industry-leading accuracy rates.
+                </p>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Built with the latest in AI technology, our platform processes transactions instantly, providing businesses and consumers with peace of mind and robust protection against financial fraud.
+                </p>
+            </div>
+            <div class="bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl p-6 text-white">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center p-3 bg-white/10 rounded-xl">
+                        <div class="text-3xl font-bold mb-1">99.9%</div>
+                        <div class="text-blue-100 text-xs">Accuracy Rate</div>
+                    </div>
+                    <div class="text-center p-3 bg-white/10 rounded-xl">
+                        <div class="text-3xl font-bold mb-1">10+</div>
+                        <div class="text-blue-100 text-xs">ML Models</div>
+                    </div>
+                    <div class="text-center p-3 bg-white/10 rounded-xl">
+                        <div class="text-3xl font-bold mb-1">&lt;1ms</div>
+                        <div class="text-blue-100 text-xs">Response Time</div>
+                    </div>
+                    <div class="text-center p-3 bg-white/10 rounded-xl">
+                        <div class="text-3xl font-bold mb-1">24/7</div>
+                        <div class="text-blue-100 text-xs">Protection</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Technology Stack -->
+        <div class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Technology Stack</h2>
+                <p class="text-gray-600 text-sm">Built with industry-leading technologies</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white rounded-xl shadow-lg p-4 text-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <i class="fab fa-python text-blue-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-900 text-sm">Python</h4>
+                    <p class="text-gray-500 text-xs">Core ML</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-4 text-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-flask text-green-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-900 text-sm">Flask</h4>
+                    <p class="text-gray-500 text-xs">Web Framework</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-4 text-center">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-brain text-orange-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-900 text-sm">Scikit-Learn</h4>
+                    <p class="text-gray-500 text-xs">Machine Learning</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-4 text-center">
+                    <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <i class="fab fa-css3-alt text-cyan-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-900 text-sm">Tailwind</h4>
+                    <p class="text-gray-500 text-xs">UI Framework</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dataset Info -->
+        <div class="bg-gray-50 rounded-2xl p-6">
+            <div class="text-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-2">Training Dataset</h2>
+                <p class="text-gray-600 text-sm">Industry-standard credit card fraud dataset</p>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-600">284,807</div>
+                    <div class="text-gray-600 text-xs">Transactions</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-red-600">492</div>
+                    <div class="text-gray-600 text-xs">Fraud Cases</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600">30</div>
+                    <div class="text-gray-600 text-xs">Features</div>
+                </div>
+            </div>
+            
+            <div class="p-3 bg-white rounded-lg">
+                <p class="text-gray-600 text-center text-xs">
+                    <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                    Dataset contains European cardholder transactions from September 2013. Features V1-V28 are PCA-transformed.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

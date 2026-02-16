@@ -1,0 +1,125 @@
+<!-- Footer Component -->
+<footer class="bg-gray-900 text-white">
+    <!-- Main Footer -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            <!-- Brand -->
+            <div class="lg:col-span-1">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center">
+                        <i class="fas fa-credit-card text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold">CardSecure</span>
+                        <span class="block text-xs text-blue-400">AI-Powered Detection</span>
+                    </div>
+                </div>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                    Advanced machine learning-powered credit card fraud detection system. 
+                    Protecting your transactions with state-of-the-art AI technology.
+                </p>
+                <div class="flex space-x-3">
+                    <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
+                        <i class="fab fa-twitter text-sm"></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
+                        <i class="fab fa-github text-sm"></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
+                        <i class="fab fa-linkedin-in text-sm"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-sm font-semibold mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{{ url_for('main.index') }}" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-blue-500"></i>Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.predict_page') }}" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-blue-500"></i>Analyze Transaction
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.dashboard') }}" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-blue-500"></i>Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.model_comparison') }}" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-blue-500"></i>Model Comparison
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Features -->
+            <div>
+                <h3 class="text-sm font-semibold mb-4">Features</h3>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-cyan-500"></i>Real-time Detection
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-cyan-500"></i>Batch Processing
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-cyan-500"></i>Ensemble Models
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-cyan-500"></i>Advanced Analytics
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Contact -->
+            <div>
+                <h3 class="text-sm font-semibold mb-4">Contact Us</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start space-x-3">
+                        <i class="fas fa-envelope text-blue-500 mt-0.5 text-sm"></i>
+                        <span class="text-gray-400 text-sm">support@cardsecure.ai</span>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <i class="fas fa-phone text-blue-500 mt-0.5 text-sm"></i>
+                        <span class="text-gray-400 text-sm">+91 8688289015</span>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <i class="fas fa-map-marker-alt text-blue-500 mt-0.5 text-sm"></i>
+                        <span class="text-gray-400 text-sm">SMEC College, Dhulapally, Hyderabad</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Bar -->
+    <div class="border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+                <p class="text-gray-500 text-xs">
+                    © 2024 CardSecure AI. All rights reserved.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-500 hover:text-white text-xs transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-gray-500 hover:text-white text-xs transition-colors">Terms of Service</a>
+                    <a href="#" class="text-gray-500 hover:text-white text-xs transition-colors">Documentation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

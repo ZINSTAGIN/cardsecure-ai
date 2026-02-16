@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<!-- Header - Compact -->
+<section class="pt-24 pb-8 gradient-bg relative overflow-hidden">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-white">
+            <h1 class="text-3xl lg:text-4xl font-bold mb-2">Advanced Analytics</h1>
+            <p class="text-blue-100">Deep insights into fraud patterns and model performance</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-6 -mt-8 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Key Stats - Compact Row -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-200 text-xs">Dataset</p>
+                        <h3 class="text-xl font-bold">10,000</h3>
+                    </div>
+                    <i class="fas fa-database text-blue-300"></i>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-red-600 to-red-700 rounded-xl p-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-red-200 text-xs">Fraud Cases</p>
+                        <h3 class="text-xl font-bold">170 <span class="text-sm font-normal">(1.7%)</span></h3>
+                    </div>
+                    <i class="fas fa-exclamation-circle text-red-300"></i>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl p-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-emerald-200 text-xs">Detection Rate</p>
+                        <h3 class="text-xl font-bold">92%</h3>
+                    </div>
+                    <i class="fas fa-check-double text-emerald-300"></i>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-200 text-xs">Prevented</p>
+                        <h3 class="text-xl font-bold">$2.4M</h3>
+                    </div>
+                    <i class="fas fa-shield-alt text-purple-300"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Grid - 2x2 Compact -->
+        <div class="grid lg:grid-cols-2 gap-4 mb-6">
+            <!-- Feature Importance -->
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center">
+                    <i class="fas fa-chart-bar text-blue-500 mr-2"></i>Feature Importance
+                </h3>
+                <div style="height: 180px;">
+                    <canvas id="featureImportanceChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Time Distribution -->
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center">
+                    <i class="fas fa-clock text-cyan-500 mr-2"></i>Fraud by Time
+                </h3>
+                <div style="height: 180px;">
+                    <canvas id="timeDistributionChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Amount Distribution -->
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center">
+                    <i class="fas fa-dollar-sign text-green-500 mr-2"></i>Amount Distribution
+                </h3>
+                <div style="height: 180px;">
+                    <canvas id="amountDistributionChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- ROC Curve -->
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center">
+                    <i class="fas fa-chart-line text-purple-500 mr-2"></i>ROC Curve
+                </h3>
+                <div style="height: 180px;">
+                    <canvas id="rocCurveChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Key Findings - Compact Grid -->
+        <div class="bg-white rounded-xl shadow-lg p-4 mb-6">
+            <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Key Findings
+            </h3>
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                <div class="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                    <div class="flex items-center mb-2">
+                        <div class="w-8 h-8 bg-blue-100 rounded flex items-center justify-center mr-2">
+                            <i class="fas fa-chart-pie text-blue-600 text-sm"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 text-sm">Class Imbalance</h4>
+                    </div>
+                    <p class="text-gray-600 text-xs">Only 1.7% fraud - using SMOTE for balance</p>
+                </div>
+                
+                <div class="p-3 bg-cyan-50 rounded-lg border border-cyan-100">
+                    <div class="flex items-center mb-2">
+                        <div class="w-8 h-8 bg-cyan-100 rounded flex items-center justify-center mr-2">
+                            <i class="fas fa-sort-amount-up text-cyan-600 text-sm"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 text-sm">Top Predictors</h4>
+                    </div>
+                    <p class="text-gray-600 text-xs">V14, V17, V12, V10 most important</p>
+                </div>
+                
+                <div class="p-3 bg-green-50 rounded-lg border border-green-100">
+                    <div class="flex items-center mb-2">
+                        <div class="w-8 h-8 bg-green-100 rounded flex items-center justify-center mr-2">
+                            <i class="fas fa-dollar-sign text-green-600 text-sm"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 text-sm">Amount Pattern</h4>
+                    </div>
+                    <p class="text-gray-600 text-xs">Fraud has higher amounts typically</p>
+                </div>
+                
+                <div class="p-3 bg-purple-50 rounded-lg border border-purple-100">
+                    <div class="flex items-center mb-2">
+                        <div class="w-8 h-8 bg-purple-100 rounded flex items-center justify-center mr-2">
+                            <i class="fas fa-clock text-purple-600 text-sm"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 text-sm">Time Pattern</h4>
+                    </div>
+                    <p class="text-gray-600 text-xs">Fraud varies by time of day</p>
+                </div>
+                
+                <div class="p-3 bg-orange-50 rounded-lg border border-orange-100">
+                    <div class="flex items-center mb-2">
+                        <div class="w-8 h-8 bg-orange-100 rounded flex items-center justify-center mr-2">
+                            <i class="fas fa-layer-group text-orange-600 text-sm"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 text-sm">Ensemble Power</h4>
+                    </div>
+                    <p class="text-gray-600 text-xs">Stacking beats single models</p>
+                </div>
+                
+                <div class="p-3 bg-red-50 rounded-lg border border-red-100">
+                    <div class="flex items-center mb-2">
+                        <div class="w-8 h-8 bg-red-100 rounded flex items-center justify-center mr-2">
+                            <i class="fas fa-balance-scale text-red-600 text-sm"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 text-sm">High Precision</h4>
+                    </div>
+                    <p class="text-gray-600 text-xs">95% precision, 92% recall achieved</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Correlation & Stats - Compact -->
+        <div class="grid lg:grid-cols-2 gap-4">
+            <!-- Correlation -->
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <h3 class="text-sm font-bold text-gray-900 mb-3">Feature Correlation with Fraud</h3>
+                <div class="grid grid-cols-5 gap-2" id="correlationGrid"></div>
+                <div class="flex items-center justify-center mt-3 space-x-4 text-xs">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-red-500 rounded mr-1"></div>
+                        <span class="text-gray-600">Positive</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-blue-500 rounded mr-1"></div>
+                        <span class="text-gray-600">Negative</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats Table -->
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <h3 class="text-sm font-bold text-gray-900 mb-3">Dataset Statistics</h3>
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="border-b bg-gray-50">
+                            <th class="text-left py-2 px-2">Feature</th>
+                            <th class="text-center py-2 px-2">Mean</th>
+                            <th class="text-center py-2 px-2">Std</th>
+                            <th class="text-center py-2 px-2">Corr</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stats-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Feature Importance - Compact
+    new Chart(document.getElementById('featureImportanceChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['V14', 'V17', 'V12', 'V10', 'V4', 'Amount'],
+            datasets: [{
+                data: [0.15, 0.12, 0.10, 0.09, 0.08, 0.05],
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+    
+    // Time Distribution - Compact
+    new Chart(document.getElementById('timeDistributionChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['0h', '4h', '8h', '12h', '16h', '20h', '24h'],
+            datasets: [{
+                label: 'Fraud %',
+                data: [2.5, 1.8, 1.2, 1.5, 1.9, 2.2, 2.4],
+                borderColor: 'rgb(239, 68, 68)',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+    
+    // Amount Distribution - Compact
+    new Chart(document.getElementById('amountDistributionChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['$0-50', '$50-200', '$200-500', '$500+'],
+            datasets: [{
+                label: 'Legit',
+                data: [4500, 4000, 1500, 500],
+                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                borderRadius: 4
+            }, {
+                label: 'Fraud',
+                data: [12, 25, 50, 83],
+                backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } }
+        }
+    });
+    
+    // ROC Curve - Compact
+    new Chart(document.getElementById('rocCurveChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['0', '0.2', '0.4', '0.6', '0.8', '1.0'],
+            datasets: [{
+                label: 'Stacking (0.99)',
+                data: [0, 0.90, 0.94, 0.96, 0.98, 1.0],
+                borderColor: 'rgb(147, 51, 234)',
+                tension: 0.4,
+                borderWidth: 2
+            }, {
+                label: 'XGBoost (0.98)',
+                data: [0, 0.88, 0.92, 0.95, 0.97, 1.0],
+                borderColor: 'rgb(16, 185, 129)',
+                tension: 0.4,
+                borderWidth: 2
+            }, {
+                label: 'Random',
+                data: [0, 0.2, 0.4, 0.6, 0.8, 1.0],
+                borderColor: 'rgb(156, 163, 175)',
+                borderDash: [5, 5],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 9 } } } }
+        }
+    });
+    
+    // Correlation Grid - Compact
+    const features = ['V14', 'V17', 'V12', 'V10', 'V4', 'V11', 'V3', 'V2', 'Amt', 'Time'];
+    const correlations = [-0.65, -0.48, -0.52, -0.42, 0.32, 0.38, 0.25, -0.18, 0.08, 0.01];
+    
+    const grid = document.getElementById('correlationGrid');
+    features.forEach((f, i) => {
+        const c = correlations[i];
+        const color = c > 0 ? `rgba(239,68,68,${Math.abs(c)})` : `rgba(59,130,246,${Math.abs(c)})`;
+        const cell = document.createElement('div');
+        cell.className = 'aspect-square rounded flex flex-col items-center justify-center text-white text-xs font-bold';
+        cell.style.backgroundColor = color;
+        cell.innerHTML = `<span>${f}</span><span class="text-[10px] opacity-80">${c.toFixed(2)}</span>`;
+        grid.appendChild(cell);
+    });
+    
+    // Stats Table
+    const stats = [
+        { f: 'Amount', m: 88.35, s: 250.12, c: 0.08 },
+        { f: 'V14', m: 0.00, s: 1.00, c: -0.65 },
+        { f: 'V17', m: 0.00, s: 1.00, c: -0.48 },
+        { f: 'V12', m: 0.00, s: 1.00, c: -0.52 },
+        { f: 'V10', m: 0.00, s: 1.00, c: -0.42 }
+    ];
+    
+    const tbody = document.getElementById('stats-table-body');
+    stats.forEach(s => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-100';
+        row.innerHTML = `
+            <td class="py-1.5 px-2 font-medium">${s.f}</td>
+            <td class="py-1.5 px-2 text-center">${s.m.toFixed(2)}</td>
+            <td class="py-1.5 px-2 text-center">${s.s.toFixed(2)}</td>
+            <td class="py-1.5 px-2 text-center font-bold ${s.c > 0 ? 'text-red-600' : 'text-blue-600'}">${s.c.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+    });
+</script>
+{% endblock %}

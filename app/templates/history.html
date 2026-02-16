@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Prediction History{% endblock %}
+
+{% block content %}
+<section class="pt-28 pb-16 gradient-bg min-h-[30vh] relative overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute top-10 left-10 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 right-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-white">
+            <h1 class="text-4xl lg:text-5xl font-bold mb-4" data-aos="fade-up">
+                Prediction History
+            </h1>
+            <p class="text-xl text-blue-100 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                Review past fraud detection predictions and outcomes
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="py-12 -mt-16 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Filters -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8" data-aos="fade-up">
+            <div class="flex flex-wrap items-center gap-4">
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+                    <select class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option>Last 90 days</option>
+                        <option>All time</option>
+                    </select>
+                </div>
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prediction Type</label>
+                    <select class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option>All</option>
+                        <option>Fraudulent</option>
+                        <option>Legitimate</option>
+                    </select>
+                </div>
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Risk Level</label>
+                    <select class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option>All Levels</option>
+                        <option>Critical</option>
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                    </select>
+                </div>
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                    <input type="text" placeholder="Search by ID..." 
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Stats -->
+        <div class="grid md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-6" data-aos="fade-up">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-history text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Predictions</p>
+                        <h3 class="text-2xl font-bold text-gray-900">12,458</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Flagged Fraud</p>
+                        <h3 class="text-2xl font-bold text-red-600">156</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Confirmed Safe</p>
+                        <h3 class="text-2xl font-bold text-green-600">12,302</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-percentage text-amber-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Accuracy Rate</p>
+                        <h3 class="text-2xl font-bold text-amber-600">99.2%</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- History Table -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden" data-aos="fade-up">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-gray-900">Recent Predictions</h3>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Export All
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left py-4 px-6 font-semibold text-gray-600">ID</th>
+                            <th class="text-left py-4 px-6 font-semibold text-gray-600">Date & Time</th>
+                            <th class="text-left py-4 px-6 font-semibold text-gray-600">Amount</th>
+                            <th class="text-center py-4 px-6 font-semibold text-gray-600">Prediction</th>
+                            <th class="text-center py-4 px-6 font-semibold text-gray-600">Probability</th>
+                            <th class="text-center py-4 px-6 font-semibold text-gray-600">Risk Level</th>
+                            <th class="text-center py-4 px-6 font-semibold text-gray-600">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table">
+                        <!-- Sample rows -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="p-6 border-t border-gray-100 flex items-center justify-between">
+                <p class="text-sm text-gray-500">Showing 1-10 of 12,458 predictions</p>
+                <div class="flex items-center space-x-2">
+                    <button class="px-3 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">1</button>
+                    <button class="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">2</button>
+                    <button class="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">3</button>
+                    <span class="text-gray-400">...</span>
+                    <button class="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">125</button>
+                    <button class="px-3 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Generate sample history data
+    const historyData = [
+        { id: 'TXN-001234', date: '2024-01-15 14:32:21', amount: 125.50, prediction: 0, probability: 0.02, risk: 'Very Low' },
+        { id: 'TXN-001233', date: '2024-01-15 14:28:45', amount: 2450.00, prediction: 1, probability: 0.89, risk: 'Critical' },
+        { id: 'TXN-001232', date: '2024-01-15 14:25:12', amount: 45.99, prediction: 0, probability: 0.08, risk: 'Very Low' },
+        { id: 'TXN-001231', date: '2024-01-15 14:22:33', amount: 890.00, prediction: 1, probability: 0.72, risk: 'High' },
+        { id: 'TXN-001230', date: '2024-01-15 14:18:55', amount: 32.50, prediction: 0, probability: 0.04, risk: 'Very Low' },
+        { id: 'TXN-001229', date: '2024-01-15 14:15:10', amount: 1250.00, prediction: 0, probability: 0.35, risk: 'Medium' },
+        { id: 'TXN-001228', date: '2024-01-15 14:12:44', amount: 78.25, prediction: 0, probability: 0.06, risk: 'Very Low' },
+        { id: 'TXN-001227', date: '2024-01-15 14:08:22', amount: 3200.00, prediction: 1, probability: 0.95, risk: 'Critical' },
+        { id: 'TXN-001226', date: '2024-01-15 14:05:11', amount: 156.00, prediction: 0, probability: 0.12, risk: 'Low' },
+        { id: 'TXN-001225', date: '2024-01-15 14:02:33', amount: 520.00, prediction: 0, probability: 0.28, risk: 'Low' }
+    ];
+    
+    const tableBody = document.getElementById('history-table');
+    
+    historyData.forEach(item => {
+        const riskColors = {
+            'Critical': 'bg-red-100 text-red-700',
+            'High': 'bg-orange-100 text-orange-700',
+            'Medium': 'bg-yellow-100 text-yellow-700',
+            'Low': 'bg-green-100 text-green-700',
+            'Very Low': 'bg-emerald-100 text-emerald-700'
+        };
+        
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-100 hover:bg-gray-50';
+        row.innerHTML = `
+            <td class="py-4 px-6 font-medium text-blue-600">${item.id}</td>
+            <td class="py-4 px-6 text-gray-600">${item.date}</td>
+            <td class="py-4 px-6 font-semibold text-gray-900">$${item.amount.toFixed(2)}</td>
+            <td class="py-4 px-6 text-center">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${item.prediction === 1 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                    ${item.prediction === 1 ? 'Fraud' : 'Legitimate'}
+                </span>
+            </td>
+            <td class="py-4 px-6 text-center font-medium">${(item.probability * 100).toFixed(1)}%</td>
+            <td class="py-4 px-6 text-center">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${riskColors[item.risk]}">
+                    ${item.risk}
+                </span>
+            </td>
+            <td class="py-4 px-6 text-center">
+                <button class="text-blue-600 hover:text-blue-800 mr-3" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="text-gray-400 hover:text-gray-600" title="Download Report">
+                    <i class="fas fa-download"></i>
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+</script>
+{% endblock %}

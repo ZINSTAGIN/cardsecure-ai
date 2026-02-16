@@ -1,0 +1,37 @@
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Logs
+logs/*.log
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep these folders
+!saved_models/
+!data/
